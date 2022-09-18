@@ -120,3 +120,62 @@ POST/GET requests occur over HTTP which doesn't understand type of data being se
 
 by 11.2.6, we are only reading data from animals.json even with the POST request
 in order to actually write/update animals.json file based on POST, need to use fs library
+
+11.3
+`public` folder holds the same file structure we used when created front-end code.
+all placed in this folder as convention. typically, `public` or `client` names are used by developers
+
+`.get()` route has one job to do which is to respond with an HTML page to display in the browser
+    so instead of using `res.json()`, we will use `res.sendFile()`, and link file path to be displayed
+    client-side
+
+at this point now when testing for HTML file, cannot just right click and run live server. must
+enter `http://localhost:3001` into URL with whatever port is being used (in this case 3001)
+
+11.3.4
+at this point when adding new front end files to `public/` folder, and running server then 
+`http://localhost:3001` CSS and Javascript didn't load.
+    easiest way to check what is happening is by opening Chrome DevTools Network tab, 
+    then refresh. in this case, we never made specific routes in Express.js server to look for
+    css and javascript files when requested. 
+        anytime we make a request, it looks at every route we've created. if no matching route
+        name, there will be an error and no response will be provided if no error catch is coded
+    in our case, we don't need to set up routes for every single file needed.
+        can set up more Express.js middleware with instructions to make files readily available,
+        so that they are not gated behind a server endpoint
+since html not set up to update new incoming data just yet, can test the form and then run
+insomnia with a GET request to make sure data was added
+
+keep endpoints organized so that you know what type of data is being transferred to endpoint
+    ex: `/api/` should indicate JSON data transfer
+    ex. `/animal/` something more normal should indicate it serves an HTML page
+
+Wildcard routes are requests made by client to a route that doesnt exist. for this, users wouldn't
+be redirected to that route since it doesnt exist but we can catch this and send them to whereever
+we want (ex. send a 404, or in our case we will return them back to the homepage)
+
+remember, when deploying to heroku:
+    git push heroku <your-feature-branchname>:main
+
+11.4
+                    app.get('/api/animals', (req, res) => {
+                    let results = animals;
+                    if (req.query) {
+                        results = filterByQuery(req.query, results);
+                    }
+                    res.json(results);
+                    });
+Question: What is the purpose of app?
+        app represents a single instance of the Express.js server.
+
+variable `app` is set to expres(), so if `app` route is moved from server.js to another file, we
+would need to make sure we're using the same `app` the entire time. if we move this
+`app.get()` to it's own file, and add `const app = express();` then app would not be referring to 
+same `app` that our server is listening to in `server.js` and would be a completely new `app`
+    for this solution, we will use another Express.js feature called `Router`
+
+require() statements will read index.js file in each directory listed, but if directory doesn't
+have an html file then it will display contents in a directory listing
+
+when running tests with jest, it will add data to our `animals.json` file which we don't want!
+to avoid this, we will use `mock()`
