@@ -1,0 +1,47 @@
+Module 11
+this module will focus on building a basic Express.js server
+    we've created Node.js applications that return data to client in the form of a response, 
+    but they have't been servers. to be a server, machine/program needs to provide functionality to client, which in our case is requesting/sending responses
+
+    Node.js has built in libraries for this funtionality support (express.js is better suited due to less code and complexity)
+
+first set up server by installing package.json, then Express.js
+`npm init -y`
+`npm i express`
+
+setting up server is simple:
+    first instantiate server, then tell it to listen for requests
+    1) `const app = express();` <----- that's all it takes to start express.js server>
+    2) next, chain the `listen()` method to server
+    `app.listen(3001, () => {
+        console.log(`API Server now on port 3001!`)
+    });
+
+    3) to add route:
+    app.get('/api/animals', (req, res) => {
+        res.send('Hello!');
+    });
+
+        .get() method requires two arguments, first is string describing route, and second is a callback function that will execute everytime route is accessed via GET request
+
+        .send() method is great for sending short messages. for lots of JSON, simply use .json()
+            we do this to change headers so client knows it's receiving JSON
+
+    `npm start` and visit `http://localhost:3001/api/animals`
+
+will use parameters to pass information to/from server
+will use `.filterByQuery()`
+    this will help filter properties that are strings
+
+but what about filtering animals based on personality traits, that are within an array? 
+    `query.personalityTraits` must be handled different for this solution
+
+ports with numbers 1024 and under are considered special by the operating system, and often require special permissions (like running the process as an administrator)
+
+port numbers can range from 1024 to 49151
+
+time to deploy, but github pages only deploys static sites made up of HTML pages. we will be deploying a server.js that will be running a Node.js process (therefore not static). In this case we can use Heroku.
+    to createa new Heroku application, enter `heroku create`
+    can specify name of app by adding `<app-name>` after `heroku create`, but name must be unique and not used anywhere else in heroku
+        now we will be using `heroku main` to push instead of `origin main`
+        heroku does not allow for cross branch actions like GitHub, so we cannot just say `git push heroku main` if we are not in the `main` branch
