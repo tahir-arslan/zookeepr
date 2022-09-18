@@ -1,0 +1,122 @@
+Module 11
+this module will focus on building a basic Express.js server
+    we've created Node.js applications that return data to client in the form of a response, 
+    but they have't been servers. to be a server, machine/program needs to provide functionality
+    to client, which in our case is requesting/sending responses
+
+    Node.js has built in libraries for this funtionality support (express.js is better suited due to 
+    less code and complexity)
+
+first set up server by installing package.json, then Express.js
+`npm init -y`
+`npm i express`
+
+setting up server is simple:
+    first instantiate server, then tell it to listen for requests
+    1) `const app = express();` <----- that's all it takes to start express.js server>
+    2) next, chain the `listen()` method to server
+    `app.listen(3001, () => {
+        console.log(`API Server now on port 3001!`)
+    });
+
+    3) to add route:
+    app.get('/api/animals', (req, res) => {
+        res.send('Hello!');
+    });
+
+        .get() method requires two arguments, first is string describing route, and second is a 
+        callback function that will execute everytime route is accessed via GET request
+
+        .send() method is great for sending short messages. for lots of JSON, simply use .json()
+            we do this to change headers so client knows it's receiving JSON
+
+    `npm start` and visit `http://localhost:3001/api/animals`
+
+will use parameters to pass information to/from server
+will use `.filterByQuery()`
+    this will help filter properties that are strings
+
+but what about filtering animals based on personality traits, that are within an array? 
+    `query.personalityTraits` must be handled different for this solution
+
+ports with numbers 1024 and under are considered special by the operating system, and 
+often require special permissions (like running the process as an administrator)
+
+port numbers can range from 1024 to 49151
+
+heroku sets variable port to 80
+
+time to deploy, but github pages only deploys static sites made up of HTML pages. we will 
+be deploying a server.js that will be running a Node.js process (therefore not static). In this 
+case we can use Heroku.
+    to createa new Heroku application, enter `heroku create`
+    can specify name of app by adding `<app-name>` after `heroku create`, but name must be
+    unique and not used anywhere else in heroku
+        now we will be using `heroku main` to push instead of `origin main`
+        heroku does not allow for cross branch actions like GitHub, so we cannot just say 
+        `git push heroku main` if we are not in the `main` branch
+
+        after deployement and auto setup complete, will get 2 links
+            one ends in .git, the other has a herokuapp.com in it. this is the one we want to open. 
+            can do this directly from the terminal by typing `heroku open`
+
+Development vs production environments
+- can have multiple versions of envinroments that are managed with Git
+Development environment:
+- code new features, fix bugs, make code updates (local repo)
+- local repo will be different from production environment (which will not be local)
+Produciton environment:
+- where your live app lives (github, heroku, AWS, microsoft Azure)
+- once code is complete and testing is completed, users will be accessing code through the 
+    production environment
+- this is the most crucial of course
+
+Different releases of code:
+- depends on company for different environments
+    ex. may allow users certain access to new features before the final production. some may 
+        make regular weekly releases. others may make larger changes as needed
+- production environment should have it's own dedicated database, and should not be linked 
+    to or have access to or be affected by your local databases. production database is usually 
+    hosted in cloud
+- auth keys will be stored in production database, and will be different from those used locally
+
+maybe we want to use one specific animal rather than an array
+    for this, `req` object gives us access to another property `req.params`
+    this needs to be defined (unlike query object): `<route>/:parameterName>`
+
+with multiple routes, be careful with placement
+    param route must come after it's GET route
+    restart local server with `npm start`
+
+req.param vs req.query
+`res.param` is multifaceted and used to compbine multiple parameters
+`res.query` is specific to single property and used to retrieve a single record
+
+11.2
+it is easy to test GET routes since we just need to check out local host link (ex. http://localhost:3001/api/animals)
+to test POST request, we can use Insomnia to test our API's to make client-side server requests
+without having to use a browser
+
+when testing in insomnia, need to turn on local server first by running `npm start`, then 
+testing routes in insomnia
+
+JSON vs Javascript objects:
+- strings must use double quotes, not single quotes (JSON)
+- names must be strings (JSON)
+
+note: server needs to be told what type of data we are looking for with a POST request
+    instructions on how to handle incoming data is called Middleware
+
+POST/GET requests occur over HTTP which doesn't understand type of data being sent
+    (it just sends raw data needed for transfer)
+    therefore when we ask for JSON using GET, server uses `res.json()` to provide context
+    this means we need to parse data from server side as well (just like how we coded for
+    client side))
+
+`app.use()` executed by express.js, adds the function to the server that our requests will pass
+    through before getting to the intended endpoint (this is referred to as middleware)
+        middleware functions can serve many purposes, ultimately allowing us to keep our route
+        endpoint callback functions more readable and letting us reuse funtionality across routes
+
+by 11.2.6, we are only reading data from animals.json even with the POST request
+in order to actually write/update animals.json file based on POST, need to use fs library
