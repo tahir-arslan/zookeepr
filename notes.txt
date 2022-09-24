@@ -89,7 +89,7 @@ with multiple routes, be careful with placement
     restart local server with `npm start`
 
 req.param vs req.query
-`res.param` is multifaceted and used to compbine multiple parameters
+`res.param` is multifaceted and used to combine multiple parameters
 `res.query` is specific to single property and used to retrieve a single record
 
 11.2
@@ -108,15 +108,25 @@ note: server needs to be told what type of data we are looking for with a POST r
     instructions on how to handle incoming data is called Middleware
 
 POST/GET requests occur over HTTP which doesn't understand type of data being sent
-    (it just sends raw data needed for transfer)
+    - (it just sends raw data needed for transfer)
     therefore when we ask for JSON using GET, server uses `res.json()` to provide context
-    this means we need to parse data from server side as well (just like how we coded for
-    client side))
+    - this also means we need to parse data when doing a POST request as well to receive data
+    from server in the format we want as well (just like how we coded for client side)
+        - clear example of this is if you open insomnia, create a post req, under JSON you have
+        multiple options on how to display the data (JSON, XML, YAML, EDN, Plain, other)
 
 `app.use()` executed by express.js, adds the function to the server that our requests will pass
-    through before getting to the intended endpoint (this is referred to as middleware)
+    through to get formatted in a specific way (how we desire) before getting to the intended 
+    endpoint (this is referred to as middleware)
         middleware functions can serve many purposes, ultimately allowing us to keep our route
         endpoint callback functions more readable and letting us reuse funtionality across routes
+
+`express.urlencoded({extended: true})` takes incoming POST data and converts it to key/value
+pairs that can be accessed in the req.body object. `extended: true` informs server that there may
+be sub-array data nested, so look deep into the POST to parse all data correctly
+    these two functions are considered `middleware` since they are functions put into the server
+    to dictate what to do with the data. specifically both of these need to be put in everytime
+    setting up a POST req in any project
 
 by 11.2.6, we are only reading data from animals.json even with the POST request
 in order to actually write/update animals.json file based on POST, need to use fs library
@@ -149,6 +159,9 @@ insomnia with a GET request to make sure data was added
 keep endpoints organized so that you know what type of data is being transferred to endpoint
     ex: `/api/` should indicate JSON data transfer
     ex. `/animal/` something more normal should indicate it serves an HTML page
+
+fetch() req is for the javascript from the client-side (in our case, `./public/js/index.js`) to connect the API links created in the 
+javascript files on the server side ('server.js')
 
 Wildcard routes are requests made by client to a route that doesnt exist. for this, users wouldn't
 be redirected to that route since it doesnt exist but we can catch this and send them to whereever
